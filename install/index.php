@@ -2,16 +2,16 @@
 global $MESS;
 IncludeModuleLangFile(__FILE__);
 
-Class collected_recaptcha extends CModule
+Class kit_recaptcha extends CModule
 {
-    var $MODULE_ID = "collected.recaptcha";
+    var $MODULE_ID = "kit.recaptcha";
     var $MODULE_NAME;
 	var $MODULE_VERSION;
 	var $MODULE_DESCRIPTION;
 	var $MODULE_VERSION_DATE;
 	var $MODULE_GROUP_RIGHTS;
 
-	function collected_recaptcha(){
+	function kit_recaptcha(){
 		include(__DIR__.'/version.php');
 		$this->PARTNER_NAME				= GetMessage('RSGC_PART_NAME');
 		$this->PARTNER_URI				= GetMessage("RSGC_PART_URL");
@@ -21,7 +21,7 @@ Class collected_recaptcha extends CModule
 		$this->MODULE_VERSION_DATE		= $arModuleVersion['VERSION_DATE'];
 		$this->MODULE_GROUP_RIGHTS		= "N";
 		$this->MODULE_NAME				= GetMessage('RSGC_MOD_NAME');
-		$this->MODULE_ID				 = "collected.recaptcha";
+		$this->MODULE_ID				 = "kit.recaptcha";
 	}
 	
 	function InstallDB(){
@@ -30,29 +30,29 @@ Class collected_recaptcha extends CModule
 	
     function DoInstall(){
         global $DB, $APPLICATION;
-        collected_recaptcha::InstallDB();
+        kit_recaptcha::InstallDB();
 		//install files
-		CopyDirFiles($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/collected.recaptcha/install/images", $_SERVER["DOCUMENT_ROOT"]."/bitrix/images/collected.recaptcha", true, true);
+		CopyDirFiles($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/kit.recaptcha/install/images", $_SERVER["DOCUMENT_ROOT"]."/bitrix/images/kit.recaptcha", true, true);
 		//Install events
-		RegisterModuleDependences("main", "OnBeforeProlog", "collected.recaptcha", "collected_recaptcha", "onBeforeProlog");
-		RegisterModuleDependences("main", "OnPageStart", "collected.recaptcha", "collected_recaptcha", "OnPageStart");
+		RegisterModuleDependences("main", "OnBeforeProlog", "kit.recaptcha", "kit_recaptcha", "onBeforeProlog");
+		RegisterModuleDependences("main", "OnPageStart", "kit.recaptcha", "kit_recaptcha", "OnPageStart");
 		//Register
-		RegisterModule("collected.recaptcha");
+		RegisterModule("kit.recaptcha");
 	}
 	
 	function DoUninstall(){
 		//uninstall Events
-		unRegisterModuleDependences("main", "OnBeforeProlog", "collected.recaptcha", "collected_recaptcha", "onBeforeProlog");
-		unRegisterModuleDependences("main", "OnPageStart", "collected.recaptcha", "collected_recaptcha", "OnPageStart");
+		unRegisterModuleDependences("main", "OnBeforeProlog", "kit.recaptcha", "kit_recaptcha", "onBeforeProlog");
+		unRegisterModuleDependences("main", "OnPageStart", "kit.recaptcha", "kit_recaptcha", "OnPageStart");
 		//uninstall files
-		DeleteDirFiles($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/collected.recaptcha/install/images/", $_SERVER["DOCUMENT_ROOT"]."/bitrix/images/collected.recaptcha");
+		DeleteDirFiles($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/kit.recaptcha/install/images/", $_SERVER["DOCUMENT_ROOT"]."/bitrix/images/kit.recaptcha");
 		try{
-			rmdir($_SERVER["DOCUMENT_ROOT"]."/bitrix/images/collected.recaptcha");
+			rmdir($_SERVER["DOCUMENT_ROOT"]."/bitrix/images/kit.recaptcha");
 		}catch(Exception $e){
 		
 		}
 		//unregister
-		unRegisterModule("collected.recaptcha");
+		unRegisterModule("kit.recaptcha");
 	}
 	
 	
@@ -67,7 +67,7 @@ Class collected_recaptcha extends CModule
 	}
 	
 	public function getSettings($LID){
-		$opt	= COption::GetOptionString('collected.recaptcha', "settings", false, $LID);
+		$opt	= COption::GetOptionString('kit.recaptcha', "settings", false, $LID);
 		if($opt != ""){
 			$ret			= unserialize($opt);
 			return $ret;
@@ -80,7 +80,7 @@ Class collected_recaptcha extends CModule
 		$ret	= '';
 		foreach($arRequest as $key=>$val){
 			if(is_array($val)){
-				$ret = collected_recaptcha::searchCaptchaSid($val);
+				$ret = kit_recaptcha::searchCaptchaSid($val);
 			}else{ 
 				if (preg_match('/captcha_sid/', $key) > 0) $ret	= $val;
 				if (preg_match('/captcha_code/', $key) > 0) $ret = $val;
@@ -93,7 +93,7 @@ Class collected_recaptcha extends CModule
 		$arRet	= array();
 		foreach($arRequest as $key=>$val){
 			if(is_array($val)){
-				$arRet[$key]	= collected_recaptcha::setNativeCaptchaCode($val, $CODE);
+				$arRet[$key]	= kit_recaptcha::setNativeCaptchaCode($val, $CODE);
 			}else{ 
 				if (preg_match('/captcha_word/', $key) > 0){
 					$arRet[$key]	= $CODE;
@@ -108,8 +108,8 @@ Class collected_recaptcha extends CModule
 	public function checkRequests($LID){
 		global $DBType, $DB, $MESS, $APPLICATION, $SESSION;
 			
-		$SETTINGS		= collected_recaptcha::getSettings($LID);
-		$CAPTCHA_SID	= collected_recaptcha::searchCaptchaSid($_REQUEST);
+		$SETTINGS		= kit_recaptcha::getSettings($LID);
+		$CAPTCHA_SID	= kit_recaptcha::searchCaptchaSid($_REQUEST);
 
 		if($CAPTCHA_SID != ''){
 			$SESSION['RSRECAPTCHA'][$CAPTCHA_SID]	= $_REQUEST['g-recaptcha-response'];
@@ -154,21 +154,21 @@ Class collected_recaptcha extends CModule
 
 			if ($oResp->success == "true"){
                 //native caption insertion
-                $CAPTCHA_CODE	= collected_recaptcha::getWaitedCode($CAPTCHA_SID);
+                $CAPTCHA_CODE	= kit_recaptcha::getWaitedCode($CAPTCHA_SID);
 				
 				if($_SERVER['REQUEST_METHOD'] == "POST"){
-					$_POST	= collected_recaptcha::setNativeCaptchaCode($_POST, $CAPTCHA_CODE);
+					$_POST	= kit_recaptcha::setNativeCaptchaCode($_POST, $CAPTCHA_CODE);
 				}else{	
-					$_GET	= collected_recaptcha::setNativeCaptchaCode($_POST, $CAPTCHA_CODE);
+					$_GET	= kit_recaptcha::setNativeCaptchaCode($_POST, $CAPTCHA_CODE);
 				}	
-				$_REQUEST	= collected_recaptcha::setNativeCaptchaCode($_POST, $CAPTCHA_CODE);
+				$_REQUEST	= kit_recaptcha::setNativeCaptchaCode($_POST, $CAPTCHA_CODE);
 			}				
 		}
 	}	
 	
 	function onBeforeProlog(){
 		global $APPLICATION, $USER;
-		$SETTINGS	= collected_recaptcha::getSettings(SITE_ID);
+		$SETTINGS	= kit_recaptcha::getSettings(SITE_ID);
 		
         //-- update (b) --
         if(isset($SETTINGS['use_hided_class']) && $SETTINGS['use_hided_class']=='on'){
@@ -387,11 +387,11 @@ Class collected_recaptcha extends CModule
 			$APPLICATION->addHeadString('<script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit"></script>'); // async defer
 		}
 		
-		collected_recaptcha::checkRequests(SITE_ID);
+		kit_recaptcha::checkRequests(SITE_ID);
 
 	}
 
 	function OnPageStart(){
-		collected_recaptcha::checkRequests(SITE_ID);
+		kit_recaptcha::checkRequests(SITE_ID);
 	}
 }	

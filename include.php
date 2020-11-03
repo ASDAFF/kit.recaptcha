@@ -3,9 +3,9 @@ global $DBType, $DB, $MESS, $APPLICATION;
 IncludeModuleLangFile(__FILE__);
 
 CModule::AddAutoloadClasses(
-	"collected.recaptcha",
+	"kit.recaptcha",
 	array(
-		"collected_recaptcha" => "install/index.php",
+		"kit_recaptcha" => "install/index.php",
 	)
 );
 

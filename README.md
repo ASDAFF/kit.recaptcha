@@ -1,1 +1,1 @@
-# collected.recaptcha
+# kit.recaptcha
